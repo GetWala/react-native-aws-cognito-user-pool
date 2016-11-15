@@ -18,6 +18,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHa
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.cognitoidentityprovider.model.AuthenticationResultType;
 import com.amazonaws.services.cognitoidentityprovider.model.RespondToAuthChallengeRequest;
 import com.amazonaws.services.cognitoidentityprovider.model.RespondToAuthChallengeResult;
 import com.facebook.react.bridge.Arguments;
@@ -99,7 +100,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     @ReactMethod
     public void isAuthenticated(ReadableMap authenticationData, final Promise promise){
         CognitoUser user = getOrCreateUser(authenticationData);
-        AuthenticationHandler handler = createAuthenticationHandler(promise);
+        AuthenticationHandler handler = createBooleanAuthenticationHandler(promise);
         user.getSessionInBackground(handler);
     }
 
@@ -113,49 +114,49 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
     @ReactMethod
     public void completeAuthenticationChallenge(ReadableMap authenticationData, final Promise promise){
-        if(challengeContinuation == null){
-            promise.reject(new Exception("There is no pending authentication challenge"));
-        }else{
-            challengeContinuation.setChallengeResponse(authenticationData.getString("challengeKey"), authenticationData.getString("challengeAnswer"));
-            challengeContinuation.continueTask();
-            promise.resolve(true);
-        }
-//        CognitoUser user = getOrCreateUser(authenticationData);
-//        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
-//        request.setChallengeName(authenticationData.getString("challengeName"));
-//        request.setChallengeResponses(fromReadableMap(authenticationData.getMap("responses")));
-//        request.setClientId(cognitoUserPool.getClientId());
-//        user.respondToChallenge(request, createAuthenticationHandler(promise), true);
+//        if(challengeContinuation == null){
+//            promise.reject(new Exception("There is no pending authentication challenge"));
+//        }else{
+//            challengeContinuation.setChallengeResponse(authenticationData.getString("challengeKey"), authenticationData.getString("challengeAnswer"));
+//            challengeContinuation.continueTask();
+//            promise.resolve(true);
+//        }
+        CognitoUser user = getOrCreateUser(authenticationData);
+        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
+        request.setChallengeName(authenticationData.getString("challengeName"));
+        request.setChallengeResponses(fromReadableMap(authenticationData.getMap("responses")));
+        request.setClientId(cognitoUserPool.getClientId());
+        user.respondToChallenge(request, createAuthenticationHandler(promise), true);
     }
 
     @ReactMethod
     public void completeAuthenticationDetails(ReadableMap authenticationData, final Promise promise){
-        if(authenticationContinuation == null){
-            promise.reject(new Exception("There is no pending authentication details activity"));
-        }else {
-            AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-            authenticationContinuation.setAuthenticationDetails(authDetails);
-            authenticationContinuation.continueTask();
-        }
-//        CognitoUser user = getOrCreateUser(authenticationData);
-//        AuthenticationHandler handler = createAuthenticationHandler(promise);
-//        AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-//        user.initiateUserAuthentication(authDetails, handler, true);
+//        if(authenticationContinuation == null){
+//            promise.reject(new Exception("There is no pending authentication details activity"));
+//        }else {
+//            AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
+//            authenticationContinuation.setAuthenticationDetails(authDetails);
+//            authenticationContinuation.continueTask();
+//        }
+        CognitoUser user = getOrCreateUser(authenticationData);
+        AuthenticationHandler handler = createAuthenticationHandler(promise);
+        AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
+        user.initiateUserAuthentication(authDetails, handler, true);
     }
 
     @ReactMethod
-    public void completeMfaCode(String mfaCode, final Promise promise){
-        if(multiFactorAuthenticationContinuation == null){
-            promise.reject(new Exception("There is no pending multi-factor authentication challenge"));
-        }else {
-            multiFactorAuthenticationContinuation.setMfaCode(mfaCode);
-            multiFactorAuthenticationContinuation.continueTask();
-            promise.resolve(true);
-        }
-//        CognitoUser user = getOrCreateUser(authenticationData);
-//        AuthenticationHandler handler = createAuthenticationHandler(promise);
-//        RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
-//        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true);
+    public void completeMfaCode(ReadableMap authenticationData, final Promise promise){
+//        if(multiFactorAuthenticationContinuation == null){
+//            promise.reject(new Exception("There is no pending multi-factor authentication challenge"));
+//        }else {
+//            multiFactorAuthenticationContinuation.setMfaCode(mfaCode);
+//            multiFactorAuthenticationContinuation.continueTask();
+//            promise.resolve(true);
+//        }
+        CognitoUser user = getOrCreateUser(authenticationData);
+        AuthenticationHandler handler = createAuthenticationHandler(promise);
+        RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
+        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true);
     }
 
     @ReactMethod
@@ -243,6 +244,36 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     private AuthenticationContinuation authenticationContinuation;
     private MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation;
     private ChallengeContinuation challengeContinuation;
+
+    private AuthenticationHandler createBooleanAuthenticationHandler(final Promise promise){
+        AuthenticationHandler handler = new AuthenticationHandler() {
+            @Override
+            public void onSuccess(CognitoUserSession userSession, CognitoDevice newDevice) {
+                promise.resolve(true);
+            }
+
+            @Override
+            public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String UserId) {
+                promise.resolve(false);
+            }
+
+            @Override
+            public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
+                promise.resolve(false);
+            }
+
+            @Override
+            public void authenticationChallenge(ChallengeContinuation continuation) {
+                promise.resolve(false);
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                promise.reject(exception);
+            }
+        };
+        return handler;
+    }
 
     private AuthenticationHandler createAuthenticationHandler(final Promise promise){
         final ReactNativeAwsCognitoUserPoolModule module = this;
