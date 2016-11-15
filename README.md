@@ -3,11 +3,11 @@
 
 ## Getting started
 
-`$ npm install react-native-react-native-aws-cognito-user-pool --save`
+`$ npm install react-native-aws-cognito-user-pool --save`
 
 ### Mostly automatic installation
 
-`$ react-native link react-native-react-native-aws-cognito-user-pool`
+`$ react-native link react-native-aws-cognito-user-pool`
 
 ### Manual installation
 
@@ -15,7 +15,7 @@
 #### iOS
 
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `react-native-react-native-aws-cognito-user-pool` and add `ReactNativeAwsCognitoUserPool.xcodeproj`
+2. Go to `node_modules` ➜ `react-native-aws-cognito-user-pool` and add `ReactNativeAwsCognitoUserPool.xcodeproj`
 3. In XCode, in the project navigator, select your project. Add `libReactNativeAwsCognitoUserPool.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 4. Run your project (`Cmd+R`)<
 
