@@ -1,5 +1,5 @@
 
-# react-native-react-native-aws-cognito-user-pool
+# react-native-aws-cognito-user-pool
 
 ## Getting started
 
