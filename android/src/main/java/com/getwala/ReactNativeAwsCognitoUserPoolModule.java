@@ -81,7 +81,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         GenericHandler handler = new GenericHandler() {
             @Override
             public void onSuccess() {
-                promise.resolve(new Object());
+                promise.resolve(true);
             }
 
             @Override
