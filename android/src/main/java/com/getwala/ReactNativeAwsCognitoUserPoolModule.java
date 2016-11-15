@@ -126,7 +126,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         request.setChallengeName(authenticationData.getString("challengeName"));
         request.setChallengeResponses(fromReadableMap(authenticationData.getMap("responses")));
         request.setClientId(cognitoUserPool.getClientId());
-        user.respondToChallenge(request, createAuthenticationHandler(promise), true);
+        user.respondToChallenge(request, createAuthenticationHandler(promise), true).run();
     }
 
     @ReactMethod
@@ -141,7 +141,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-        user.initiateUserAuthentication(authDetails, handler, true);
+        user.initiateUserAuthentication(authDetails, handler, true).run();
     }
 
     @ReactMethod
@@ -156,7 +156,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
-        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true);
+        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
     }
 
     @ReactMethod
