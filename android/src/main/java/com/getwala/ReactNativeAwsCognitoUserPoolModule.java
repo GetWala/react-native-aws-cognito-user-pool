@@ -300,6 +300,10 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 map.putString("activity", "AuthenticationComplete");
                 map.putBoolean("authenticated", userSession.isValid());
                 map.putString("idToken", userSession.getIdToken().getJWTToken());
+                if(newDevice != null){
+                    map.putString("deviceKey", newDevice.getDeviceKey());
+                    map.putString("deviceName", newDevice.getDeviceName());
+                }
                 promise.resolve(map);
             }
 
