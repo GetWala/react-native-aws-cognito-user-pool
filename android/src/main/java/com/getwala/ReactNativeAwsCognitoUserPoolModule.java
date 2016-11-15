@@ -154,13 +154,20 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 //            multiFactorAuthenticationContinuation.continueTask();
 //            promise.resolve(true);
 //        }
+//        CognitoUser user = getOrCreateUser(authenticationData);
+//        AuthenticationHandler handler = createAuthenticationHandler(promise);
+//        RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
+//        result.setChallengeName(ChallengeNameType.SMS_MFA);
+//        result.addChallengeParametersEntry("USERNAME", authenticationData.getString("userId"));
+//        result.addChallengeParametersEntry("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
+//        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
         CognitoUser user = getOrCreateUser(authenticationData);
-        AuthenticationHandler handler = createAuthenticationHandler(promise);
-        RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
-        result.setChallengeName(ChallengeNameType.SMS_MFA);
-        result.addChallengeParametersEntry("USERNAME", authenticationData.getString("userId"));
-        result.addChallengeParametersEntry("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
-        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
+        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
+        request.setChallengeName(ChallengeNameType.SMS_MFA);
+        request.addChallengeResponsesEntry("USERNAME", authenticationData.getString("userId"));
+        request.addChallengeResponsesEntry("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
+        request.setClientId(cognitoUserPool.getClientId());
+        user.respondToChallenge(request, createAuthenticationHandler(promise), true).run();
     }
 
     @ReactMethod
