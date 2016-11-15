@@ -169,6 +169,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_USERNAME, authenticationData.getString("userId"));
         request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_SMS_MFA_CODE, authenticationData.getString("mfaCode"));
         request.setClientId(cognitoUserPool.getClientId());
+        request.setSession(authenticationData.getString("session"));
         user.respondToChallenge(request, createAuthenticationHandler(promise), true).run();
     }
 
