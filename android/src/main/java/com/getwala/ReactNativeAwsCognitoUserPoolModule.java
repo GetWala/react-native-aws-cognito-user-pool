@@ -158,6 +158,10 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
         result.setChallengeName(ChallengeNameType.SMS_MFA);
+        java.util.Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("USERNAME", authenticationData.getString("userId"));
+        parameters.put("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
+        result.setChallengeParameters(parameters);
         user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
     }
 
