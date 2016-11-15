@@ -55,7 +55,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     }
 
     @ReactMethod
-    public void SignUp(String userId, String password, ReadableMap attributes, final Promise promise){
+    public void signUp(String userId, String password, ReadableMap attributes, final Promise promise){
         lastSignUp = null;
         SignUpHandler handler = new SignUpHandler() {
             @Override
