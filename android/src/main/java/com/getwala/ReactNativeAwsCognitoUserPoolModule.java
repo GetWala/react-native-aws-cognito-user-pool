@@ -112,6 +112,8 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
+        authDetails.setAuthenticationType(CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD_VERIFIER);
+        //authDetails.setAuthenticationParameter(CognitoServiceConstants.AUTH_PARAM_DEVICE_KEY);
         user.initiateUserAuthentication(authDetails, handler, true).run();
     }
 
