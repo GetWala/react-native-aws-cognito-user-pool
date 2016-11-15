@@ -7,12 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "aws",
+    "cognito",
+    "user pool"
   ],
-  "author": "",
-  "license": "",
-  "peerDependencies": {
-    "react-native": "^0.37.0",
-    "react-native-windows": "^0.38.0"
-  }
+  "author": "Ross McEwan",
+  "license": ""
 }
