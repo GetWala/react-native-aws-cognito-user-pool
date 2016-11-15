@@ -19,6 +19,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHan
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidentityprovider.model.AuthenticationResultType;
+import com.amazonaws.services.cognitoidentityprovider.model.ChallengeNameType;
 import com.amazonaws.services.cognitoidentityprovider.model.RespondToAuthChallengeRequest;
 import com.amazonaws.services.cognitoidentityprovider.model.RespondToAuthChallengeResult;
 import com.facebook.react.bridge.Arguments;
@@ -156,6 +157,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
+        result.setChallengeName(ChallengeNameType.SMS_MFA);
         user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
     }
 
