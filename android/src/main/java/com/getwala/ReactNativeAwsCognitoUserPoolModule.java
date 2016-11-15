@@ -1,6 +1,7 @@
 
 package com.getwala;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.util.CognitoServiceConstants;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
@@ -32,6 +33,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -164,8 +166,8 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
         request.setChallengeName(ChallengeNameType.SMS_MFA);
-        request.addChallengeResponsesEntry("USERNAME", authenticationData.getString("userId"));
-        request.addChallengeResponsesEntry("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
+        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_USERNAME, authenticationData.getString("userId"));
+        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_SMS_MFA_CODE, authenticationData.getString("mfaCode"));
         request.setClientId(cognitoUserPool.getClientId());
         user.respondToChallenge(request, createAuthenticationHandler(promise), true).run();
     }
@@ -309,10 +311,20 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
             @Override
             public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
-                module.multiFactorAuthenticationContinuation = continuation;
-                WritableMap map = Arguments.createMap();
-                map.putString("activity", "MfaCodeRequired");
-                promise.resolve(map);
+                try {
+                    module.multiFactorAuthenticationContinuation = continuation;
+                    Field challengeField = continuation.getClass().getDeclaredField("challenge");
+                    challengeField.setAccessible(true);
+                    RespondToAuthChallengeResult challenge = (RespondToAuthChallengeResult) challengeField.get(continuation);
+                    WritableMap map = Arguments.createMap();
+                    map.putString("activity", "MfaCodeRequired");
+                    map.putString("session", challenge.getSession());
+                    promise.resolve(map);
+                }catch(NoSuchFieldException nsfe){
+                    promise.reject(nsfe);
+                }catch(IllegalAccessException iae){
+                    promise.reject(iae);
+                }
             }
 
             @Override
