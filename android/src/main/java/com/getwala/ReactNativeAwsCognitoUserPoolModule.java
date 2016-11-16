@@ -32,7 +32,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
-import com.squareup.okhttp.Call;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
