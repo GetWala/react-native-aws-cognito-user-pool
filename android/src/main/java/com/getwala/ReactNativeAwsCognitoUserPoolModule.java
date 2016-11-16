@@ -116,6 +116,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         //authDetails.setAuthenticationType(CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD_VERIFIER);
         //authDetails.setAuthenticationParameter(CognitoServiceConstants.AUTH_PARAM_DEVICE_KEY);
         new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
+        promise.resolve(true);
     }
 
     @ReactMethod
