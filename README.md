@@ -50,6 +50,22 @@ import ReactNativeAwsCognitoUserPool from 'react-native-aws-cognito-user-pool';
 
 //first initialize the user pool
 ReactNativeAwsCognitoUserPool.initializeUserPool(poolId, clientId, clientSecret, region);
+//setup handlers to deal with the authentication events
+ReactNativeAwsCognitoUserPool.setAuthenticationSuccessHandler(result=>{
+	//this will be called when authentication is successful
+});
+ReactNativeAwsCognitoUserPool.setAuthenticationDetailsRequiredHandler(result=>{
+	//this will be called when authentication details are required by the authentication handler
+});
+ReactNativeAwsCognitoUserPool.setMfaCodeRequiredHandler(result=>{
+	//this will be called when an MFA code is required by the authentication handler
+});
+ReactNativeAwsCognitoUserPool.setChallengeRequiredHandler(result=>{
+	//this will be called when a challenge needs to be fulfilled from the authentication handler
+});
+ReactNativeAwsCognitoUserPool.setErrorHandler(result=>{
+	//this will be called for any failures that occur from the authentication handler
+});
 
 ReactNativeAwsCognitoUserPool.signUp(userId, password, attributes).then(result=>{
 	//do something with the result
@@ -71,29 +87,22 @@ ReactNativeAwsCognitoUserPool.isAuthenticated(authenticationData).then(result=>{
 });
 
 ReactNativeAwsCognitoUserPool.authenticate(authenticationData).then(result=>{
-	//the result will indicate the activity that needs to take place next
-	//either:
-	//AuthenticationComplete 
-	//OR 
-	//AuthenticationDetailsRequired
-	//OR
-	//MfaCodeRequired
-	//OR
-	//AuthenticationChallengeRequired 
+	//the result will be true if authentication was initiated
+	//the associated handlers will be called with events 
 }).catch(error=>{
 	//any errors that occurred
 });
 
 //complete a pending authentication challenge received during authenticate
 ReactNativeAwsCognitoUserPool.completeAuthenticationChallenge(authenticationData).then(result=>{
-	
+	//result will be true if task was continued successfully
 }).catch(error=>{
 	//any errors that occurred
 });
 
 //complete a pending authentication details request received during authenticate
 ReactNativeAwsCognitoUserPool.completeAuthenticationDetails(authenticationData).then(result=>{
-
+	//result will be true if task was continued successfully
 }).catch(error=>{
 	//any errors that occurred
 });
@@ -112,17 +121,24 @@ ReactNativeAwsCognitoUserPool.signOut().then(result=>{
 });
 
 ReactNativeAwsCognitoUserPool.forgotPassword(authenticationData).then(result=>{
-	//the result will indicate the activity that needs to take place next
-	//either:
-	//ForgotPasswordComplete
-	//OR 
-	//ForgotPasswordResetCodeRequired
+	//the result will be true if forgot password was successfully executed
+	//events will be published to handlers
 }).catch(error=>{
 	//any errors that occurred
 });
 
-ReactNativeAwsCognitoUserPool.completeForgotPasswordResetCode(authenticationData).then(result=>{
+ReactNativeAwsCognitoUserPool.setForgotPasswordSuccessfulHandler(result=>{
+	//this is called when the password has been successfully reset
+});
 
+ReactNativeAwsCognitoUserPool.setResetCodeHandler(result=>{
+	//this is called when the reset code is required
+});
+
+ReactNativeAwsCognitoUserPool.completeForgotPasswordResetCode(authenticationData).then(result=>{
+	//completes the forgot password process with the provided new password and verification code
+	//events will be published to handlers
+	//result will be true if task was successfullly continued
 }).catch(error=>{
 	//any errors that occurred
 });

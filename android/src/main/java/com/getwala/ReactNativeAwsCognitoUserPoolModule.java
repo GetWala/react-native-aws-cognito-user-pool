@@ -112,8 +112,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-        //authDetails.setAuthenticationType(CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD_VERIFIER);
-        //authDetails.setAuthenticationParameter(CognitoServiceConstants.AUTH_PARAM_DEVICE_KEY);
         new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
         promise.resolve(true);
     }
@@ -164,15 +162,38 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
     private ForgotPasswordContinuation lastForgotPasswordContinuation;
 
+    private Callback resetCodeHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setResetCodeHandler(Callback handler){
+        this.resetCodeHandler = handler;
+    }
+
+    private Callback forgotPasswordSuccessfulHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setForgotPasswordSuccessfulHandler(Callback handler){
+        this.forgotPasswordSuccessfulHandler = handler;
+    }
+
     @ReactMethod
     public void forgotPassword(ReadableMap authenticationData, final Promise promise){
+        final ReactNativeAwsCognitoUserPoolModule module = this;
         CognitoUser user = getOrCreateUser(authenticationData);
         ForgotPasswordHandler handler = new ForgotPasswordHandler() {
             @Override
             public void onSuccess() {
                 WritableMap map = Arguments.createMap();
                 map.putString("activity", "ForgotPasswordComplete");
-                promise.resolve(map);
+                module.forgotPasswordSuccessfulHandler.invoke(map);
             }
 
             @Override
@@ -183,16 +204,17 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 map.putString("attributeName", details.getAttributeName());
                 map.putString("deliveryMedium", details.getDeliveryMedium());
                 map.putString("destination", details.getDestination());
-                promise.resolve(map);
+                module.resetCodeHandler.invoke(map);
             }
 
             @Override
             public void onFailure(Exception exception) {
-                promise.reject(exception);
+                module.errorHandler.invoke(exception);
             }
         };
         lastForgotPasswordContinuation = null;
         user.forgotPasswordInBackground(handler);
+        promise.resolve(true);
     }
 
     @ReactMethod
