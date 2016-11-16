@@ -120,34 +120,24 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
     @ReactMethod
     public void completeAuthenticationChallenge(ReadableMap authenticationData, final Promise promise){
-//        if(challengeContinuation == null){
-//            promise.reject(new Exception("There is no pending authentication challenge"));
-//        }else{
-//            challengeContinuation.setChallengeResponse(authenticationData.getString("challengeKey"), authenticationData.getString("challengeAnswer"));
-//            challengeContinuation.continueTask();
-//            promise.resolve(true);
-//        }
-        CognitoUser user = getOrCreateUser(authenticationData);
-        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
-        request.setChallengeName(authenticationData.getString("challengeName"));
-        request.setChallengeResponses(fromReadableMap(authenticationData.getMap("responses")));
-        request.setClientId(cognitoUserPool.getClientId());
-        new Thread(user.respondToChallenge(request, createAuthenticationHandler(promise), true)).start();
+        if(challengeContinuation == null){
+            promise.reject(new Exception("There is no pending authentication challenge"));
+        }else{
+            challengeContinuation.setChallengeResponse(authenticationData.getString("challengeKey"), authenticationData.getString("challengeAnswer"));
+            challengeContinuation.continueTask();
+            promise.resolve(true);
+        }
     }
 
     @ReactMethod
     public void completeAuthenticationDetails(ReadableMap authenticationData, final Promise promise){
-//        if(authenticationContinuation == null){
-//            promise.reject(new Exception("There is no pending authentication details activity"));
-//        }else {
-//            AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-//            authenticationContinuation.setAuthenticationDetails(authDetails);
-//            authenticationContinuation.continueTask();
-//        }
-        CognitoUser user = getOrCreateUser(authenticationData);
-        AuthenticationHandler handler = createAuthenticationHandler(promise);
-        AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-        new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
+        if(authenticationContinuation == null){
+            promise.reject(new Exception("There is no pending authentication details activity"));
+        }else {
+            AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
+            authenticationContinuation.setAuthenticationDetails(authDetails);
+            authenticationContinuation.continueTask();
+        }
     }
 
     @ReactMethod
@@ -159,22 +149,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
             multiFactorAuthenticationContinuation.continueTask();
             promise.resolve(true);
         }
-//        CognitoUser user = getOrCreateUser(authenticationData);
-//        AuthenticationHandler handler = createAuthenticationHandler(promise);
-//        RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
-//        result.setChallengeName(ChallengeNameType.SMS_MFA);
-//        result.addChallengeParametersEntry("USERNAME", authenticationData.getString("userId"));
-//        result.addChallengeParametersEntry("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
-//        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
-
-//        CognitoUser user = getOrCreateUser(authenticationData);
-//        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
-//        request.setChallengeName(ChallengeNameType.SMS_MFA);
-//        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_USERNAME, authenticationData.getString("userId"));
-//        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_SMS_MFA_CODE, authenticationData.getString("mfaCode"));
-//        request.setClientId(cognitoUserPool.getClientId());
-//        request.setSession(authenticationData.getString("session"));
-//        new Thread(user.respondToChallenge(request, createAuthenticationHandler(promise), true)).start();
     }
 
     @ReactMethod
@@ -362,7 +336,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                     map.putString("deviceName", newDevice.getDeviceName());
                 }
                 module.authenticationSuccessHandler.invoke(map);
-//                promise.resolve(map);
             }
 
             @Override
@@ -372,7 +345,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 map.putString("activity", "AuthenticationDetailsRequired");
                 map.putString("userId", UserId);
                 module.authenticationDetailsRequiredHandler.invoke(map);
-//                promise.resolve(map);
             }
 
             @Override
@@ -386,13 +358,10 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                     map.putString("activity", "MfaCodeRequired");
                     map.putString("session", challenge.getSession());
                     module.mfaCodeRequiredHandler.invoke(map);
-//                    promise.resolve(map);
                 }catch(NoSuchFieldException nsfe){
                     module.errorHandler.invoke(nsfe);
-//                    promise.reject(nsfe);
                 }catch(IllegalAccessException iae){
                     module.errorHandler.invoke(iae);
-//                    promise.reject(iae);
                 }
             }
 
@@ -404,7 +373,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 map.putString("challengeName", continuation.getChallengeName());
                 map.putMap("parameters", fromMap(continuation.getParameters()));
                 module.challengeRequiredHandler.invoke(map);
-//                promise.resolve(map);
             }
 
             @Override
