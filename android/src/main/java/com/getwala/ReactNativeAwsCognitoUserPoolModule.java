@@ -32,6 +32,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
+import com.squareup.okhttp.Call;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -112,9 +113,9 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-        authDetails.setAuthenticationType(CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD_VERIFIER);
+        //authDetails.setAuthenticationType(CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD_VERIFIER);
         //authDetails.setAuthenticationParameter(CognitoServiceConstants.AUTH_PARAM_DEVICE_KEY);
-        user.initiateUserAuthentication(authDetails, handler, true).run();
+        new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
     }
 
     @ReactMethod
@@ -131,7 +132,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         request.setChallengeName(authenticationData.getString("challengeName"));
         request.setChallengeResponses(fromReadableMap(authenticationData.getMap("responses")));
         request.setClientId(cognitoUserPool.getClientId());
-        user.respondToChallenge(request, createAuthenticationHandler(promise), true).run();
+        new Thread(user.respondToChallenge(request, createAuthenticationHandler(promise), true)).start();
     }
 
     @ReactMethod
@@ -146,18 +147,18 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         CognitoUser user = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler(promise);
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-        user.initiateUserAuthentication(authDetails, handler, true).run();
+        new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
     }
 
     @ReactMethod
     public void completeMfaCode(ReadableMap authenticationData, final Promise promise){
-//        if(multiFactorAuthenticationContinuation == null){
-//            promise.reject(new Exception("There is no pending multi-factor authentication challenge"));
-//        }else {
-//            multiFactorAuthenticationContinuation.setMfaCode(mfaCode);
-//            multiFactorAuthenticationContinuation.continueTask();
-//            promise.resolve(true);
-//        }
+        if(multiFactorAuthenticationContinuation == null){
+            promise.reject(new Exception("There is no pending multi-factor authentication challenge"));
+        }else {
+            multiFactorAuthenticationContinuation.setMfaCode(authenticationData.getString("mfaCode"));
+            multiFactorAuthenticationContinuation.continueTask();
+            promise.resolve(true);
+        }
 //        CognitoUser user = getOrCreateUser(authenticationData);
 //        AuthenticationHandler handler = createAuthenticationHandler(promise);
 //        RespondToAuthChallengeResult result = new RespondToAuthChallengeResult();
@@ -165,14 +166,15 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 //        result.addChallengeParametersEntry("USERNAME", authenticationData.getString("userId"));
 //        result.addChallengeParametersEntry("SMS_MFA_CODE", authenticationData.getString("mfaCode"));
 //        user.respondToMfaChallenge(authenticationData.getString("mfaCode"), result, handler, true).run();
-        CognitoUser user = getOrCreateUser(authenticationData);
-        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
-        request.setChallengeName(ChallengeNameType.SMS_MFA);
-        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_USERNAME, authenticationData.getString("userId"));
-        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_SMS_MFA_CODE, authenticationData.getString("mfaCode"));
-        request.setClientId(cognitoUserPool.getClientId());
-        request.setSession(authenticationData.getString("session"));
-        user.respondToChallenge(request, createAuthenticationHandler(promise), true).run();
+
+//        CognitoUser user = getOrCreateUser(authenticationData);
+//        RespondToAuthChallengeRequest request = new RespondToAuthChallengeRequest();
+//        request.setChallengeName(ChallengeNameType.SMS_MFA);
+//        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_USERNAME, authenticationData.getString("userId"));
+//        request.addChallengeResponsesEntry(CognitoServiceConstants.CHLG_RESP_SMS_MFA_CODE, authenticationData.getString("mfaCode"));
+//        request.setClientId(cognitoUserPool.getClientId());
+//        request.setSession(authenticationData.getString("session"));
+//        new Thread(user.respondToChallenge(request, createAuthenticationHandler(promise), true)).start();
     }
 
     @ReactMethod
@@ -291,6 +293,61 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         return handler;
     }
 
+    private Callback authenticationSuccessHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setAuthenticationSuccessHandler(Callback handler){
+        this.authenticationSuccessHandler = handler;
+    }
+
+    private Callback authenticationDetailsRequiredHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setAuthenticationDetailsRequiredHandler(Callback handler){
+        this.authenticationDetailsRequiredHandler = handler;
+    }
+
+    private Callback mfaCodeRequiredHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setMfaCodeRequiredHandler(Callback handler){
+        this.mfaCodeRequiredHandler = handler;
+    }
+
+    private Callback challengeRequiredHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setChallengeRequiredHandler(Callback handler){
+        this.challengeRequiredHandler = handler;
+    }
+
+    private Callback errorHandler = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+
+        }
+    };
+    @ReactMethod
+    public void setErrorHandler(Callback handler){
+        this.errorHandler = handler;
+    }
+
     private AuthenticationHandler createAuthenticationHandler(final Promise promise){
         final ReactNativeAwsCognitoUserPoolModule module = this;
         AuthenticationHandler handler = new AuthenticationHandler() {
@@ -304,7 +361,8 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                     map.putString("deviceKey", newDevice.getDeviceKey());
                     map.putString("deviceName", newDevice.getDeviceName());
                 }
-                promise.resolve(map);
+                module.authenticationSuccessHandler.invoke(map);
+//                promise.resolve(map);
             }
 
             @Override
@@ -313,7 +371,8 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 WritableMap map = Arguments.createMap();
                 map.putString("activity", "AuthenticationDetailsRequired");
                 map.putString("userId", UserId);
-                promise.resolve(map);
+                module.authenticationDetailsRequiredHandler.invoke(map);
+//                promise.resolve(map);
             }
 
             @Override
@@ -326,11 +385,14 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                     WritableMap map = Arguments.createMap();
                     map.putString("activity", "MfaCodeRequired");
                     map.putString("session", challenge.getSession());
-                    promise.resolve(map);
+                    module.mfaCodeRequiredHandler.invoke(map);
+//                    promise.resolve(map);
                 }catch(NoSuchFieldException nsfe){
-                    promise.reject(nsfe);
+                    module.errorHandler.invoke(nsfe);
+//                    promise.reject(nsfe);
                 }catch(IllegalAccessException iae){
-                    promise.reject(iae);
+                    module.errorHandler.invoke(iae);
+//                    promise.reject(iae);
                 }
             }
 
@@ -341,7 +403,8 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 map.putString("activity", "AuthenticationChallengeRequired");
                 map.putString("challengeName", continuation.getChallengeName());
                 map.putMap("parameters", fromMap(continuation.getParameters()));
-                promise.resolve(map);
+                module.challengeRequiredHandler.invoke(map);
+//                promise.resolve(map);
             }
 
             @Override
