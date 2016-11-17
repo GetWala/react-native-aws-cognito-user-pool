@@ -296,7 +296,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setAuthenticationSuccessHandler(Callback handler){
+    public void onAuthenticationSuccessful(Callback handler){
         this.authenticationSuccessHandler = handler;
     }
 
@@ -307,7 +307,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setAuthenticationDetailsRequiredHandler(Callback handler){
+    public void onAuthenticationDetailsRequired(Callback handler){
         this.authenticationDetailsRequiredHandler = handler;
     }
 
@@ -318,7 +318,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setMfaCodeRequiredHandler(Callback handler){
+    public void onMfaCodeRequired(Callback handler){
         this.mfaCodeRequiredHandler = handler;
     }
 
@@ -329,7 +329,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setChallengeRequiredHandler(Callback handler){
+    public void onChallengeRequired(Callback handler){
         this.challengeRequiredHandler = handler;
     }
 
@@ -340,7 +340,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setErrorHandler(Callback handler){
+    public void onError(Callback handler){
         this.errorHandler = handler;
     }
 
