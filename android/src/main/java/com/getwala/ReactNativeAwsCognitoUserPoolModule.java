@@ -249,11 +249,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         user.resendConfirmationCodeInBackground(handler);
     }
 
-    @ReactMethod
-    public void ThisIsATest(){
-        
-    }
-
     private CognitoUser getOrCreateUser(ReadableMap authenticationData){
         CognitoUser user = cognitoUserPool.getCurrentUser();
         if(user == null) user = cognitoUserPool.getUser(authenticationData.getString("userId"));
