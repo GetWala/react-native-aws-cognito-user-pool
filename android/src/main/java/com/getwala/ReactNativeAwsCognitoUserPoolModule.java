@@ -263,22 +263,36 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         AuthenticationHandler handler = new AuthenticationHandler() {
             @Override
             public void onSuccess(CognitoUserSession userSession, CognitoDevice newDevice) {
-                promise.resolve(true);
+                WritableMap map = Arguments.createMap();
+                map.putString("activity", "AuthenticationComplete");
+                map.putBoolean("authenticated", userSession.isValid());
+                map.putString("idToken", userSession.getIdToken().getJWTToken());
+                if(newDevice != null){
+                    map.putString("deviceKey", newDevice.getDeviceKey());
+                    map.putString("deviceName", newDevice.getDeviceName());
+                }
+                promise.resolve(map);
             }
 
             @Override
             public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String UserId) {
-                promise.resolve(false);
+                WritableMap map = Arguments.createMap();
+                map.putBoolean("authenticated", false);
+                promise.resolve(map);
             }
 
             @Override
             public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
-                promise.resolve(false);
+                WritableMap map = Arguments.createMap();
+                map.putBoolean("authenticated", false);
+                promise.resolve(map);
             }
 
             @Override
             public void authenticationChallenge(ChallengeContinuation continuation) {
-                promise.resolve(false);
+                WritableMap map = Arguments.createMap();
+                map.putBoolean("authenticated", false);
+                promise.resolve(map);
             }
 
             @Override
