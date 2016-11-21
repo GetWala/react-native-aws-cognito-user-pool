@@ -285,9 +285,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
             public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
                 WritableMap map = Arguments.createMap();
                 map.putBoolean("authenticated", false);
-                map.putString("attributeName", continuation.getParameters().getAttributeName());
-                map.putString("deliveryMedium", continuation.getParameters().getDeliveryMedium());
-                map.putString("destination", continuation.getParameters().getDestination());
                 promise.resolve(map);
             }
 
@@ -396,6 +393,9 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                     WritableMap map = Arguments.createMap();
                     map.putString("activity", "MfaCodeRequired");
                     map.putString("session", challenge.getSession());
+                    map.putString("attributeName", continuation.getParameters().getAttributeName());
+                    map.putString("deliveryMedium", continuation.getParameters().getDeliveryMedium());
+                    map.putString("destination", continuation.getParameters().getDestination());
                     module.mfaCodeRequiredHandler.invoke(map);
                 }catch(NoSuchFieldException nsfe){
                     module.errorHandler.invoke(nsfe.getMessage());
