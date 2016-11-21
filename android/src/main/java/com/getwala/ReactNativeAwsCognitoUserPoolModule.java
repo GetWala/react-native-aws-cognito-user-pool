@@ -110,7 +110,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     @ReactMethod
     public void authenticate(ReadableMap authenticationData, final Promise promise){
         CognitoUser user = getOrCreateUser(authenticationData);
-        AuthenticationHandler handler = createAuthenticationHandler(promise);
+        AuthenticationHandler handler = createAuthenticationHandler();
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
         new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
         promise.resolve(true);
@@ -169,7 +169,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setResetCodeHandler(Callback handler){
+    public void onResetCode(Callback handler){
         this.resetCodeHandler = handler;
     }
 
@@ -180,7 +180,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         }
     };
     @ReactMethod
-    public void setForgotPasswordSuccessfulHandler(Callback handler){
+    public void onForgotPasswordSuccessful(Callback handler){
         this.forgotPasswordSuccessfulHandler = handler;
     }
 
@@ -358,7 +358,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         this.errorHandler = handler;
     }
 
-    private AuthenticationHandler createAuthenticationHandler(final Promise promise){
+    private AuthenticationHandler createAuthenticationHandler(){
         final ReactNativeAwsCognitoUserPoolModule module = this;
         AuthenticationHandler handler = new AuthenticationHandler() {
             @Override
@@ -413,7 +413,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
             @Override
             public void onFailure(Exception exception) {
-                promise.reject(exception);
+                module.errorHandler.invoke(exception);
             }
         };
         return handler;
