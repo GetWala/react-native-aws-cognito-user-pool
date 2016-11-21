@@ -202,6 +202,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
             @Override
             public void getResetCode(ForgotPasswordContinuation continuation) {
+                module.lastForgotPasswordContinuation = continuation;
                 WritableMap map = Arguments.createMap();
                 CognitoUserCodeDeliveryDetails details =  continuation.getParameters();
                 map.putString("activity", "ForgotPasswordResetCodeRequired");
