@@ -395,9 +395,9 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                     map.putString("session", challenge.getSession());
                     module.mfaCodeRequiredHandler.invoke(map);
                 }catch(NoSuchFieldException nsfe){
-                    module.errorHandler.invoke(nsfe);
+                    module.errorHandler.invoke(nsfe.getMessage());
                 }catch(IllegalAccessException iae){
-                    module.errorHandler.invoke(iae);
+                    module.errorHandler.invoke(iae.getMessage());
                 }
             }
 
@@ -413,7 +413,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
             @Override
             public void onFailure(Exception exception) {
-                module.errorHandler.invoke(exception);
+                module.errorHandler.invoke(exception.getMessage());
             }
         };
         return handler;
