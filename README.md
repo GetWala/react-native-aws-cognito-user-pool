@@ -51,19 +51,19 @@ import ReactNativeAwsCognitoUserPool from 'react-native-aws-cognito-user-pool';
 //first initialize the user pool
 ReactNativeAwsCognitoUserPool.initializeUserPool(poolId, clientId, clientSecret, region);
 //setup handlers to deal with the authentication events
-ReactNativeAwsCognitoUserPool.setAuthenticationSuccessHandler(result=>{
+ReactNativeAwsCognitoUserPool.onAuthenticationSuccessful(result=>{
 	//this will be called when authentication is successful
 });
-ReactNativeAwsCognitoUserPool.setAuthenticationDetailsRequiredHandler(result=>{
+ReactNativeAwsCognitoUserPool.onAuthenticationDetailsRequired(result=>{
 	//this will be called when authentication details are required by the authentication handler
 });
-ReactNativeAwsCognitoUserPool.setMfaCodeRequiredHandler(result=>{
+ReactNativeAwsCognitoUserPool.onMfaCodeRequired(result=>{
 	//this will be called when an MFA code is required by the authentication handler
 });
-ReactNativeAwsCognitoUserPool.setChallengeRequiredHandler(result=>{
+ReactNativeAwsCognitoUserPool.onChallengeRequired(result=>{
 	//this will be called when a challenge needs to be fulfilled from the authentication handler
 });
-ReactNativeAwsCognitoUserPool.setErrorHandler(result=>{
+ReactNativeAwsCognitoUserPool.onError(result=>{
 	//this will be called for any failures that occur from the authentication handler
 });
 
@@ -127,7 +127,7 @@ ReactNativeAwsCognitoUserPool.forgotPassword(authenticationData).then(result=>{
 	//any errors that occurred
 });
 
-ReactNativeAwsCognitoUserPool.setForgotPasswordSuccessfulHandler(result=>{
+ReactNativeAwsCognitoUserPool.onForgotPasswordSuccessful(result=>{
 	//this is called when the password has been successfully reset
 });
 
