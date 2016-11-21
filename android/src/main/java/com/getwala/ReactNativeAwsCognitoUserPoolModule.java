@@ -63,11 +63,15 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         lastSignUp = null;
         SignUpHandler handler = new SignUpHandler() {
             @Override
-            public void onSuccess(CognitoUser user, boolean signUpConfirmationState, CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
+            public void onSuccess(CognitoUser user, boolean signUpConfirmationState, CognitoUserCodeDeliveryDetails details) {
                 lastSignUp = user;
                 WritableMap map = Arguments.createMap();
                 map.putString("userId", user.getUserId());
                 map.putString("userPoolId", user.getUserPoolId());
+                map.putBoolean("signUpConfirmationState", signUpConfirmationState);
+                map.putString("attributeName", details.getAttributeName());
+                map.putString("deliveryMedium", details.getDeliveryMedium());
+                map.putString("destination", details.getDestination());
                 promise.resolve(map);
             }
 
