@@ -1,5 +1,5 @@
 
-package com.getwala;
+package com.getwala.aws.cognito.userpool;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.util.CognitoServiceConstants;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
