@@ -235,7 +235,6 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
     @ReactMethod
     public void resendConfirmationCode(ReadableMap authenticationData, final Promise promise){
-        CognitoUser user = getOrCreateUser(authenticationData);
         VerificationHandler handler = new VerificationHandler() {
             @Override
             public void onSuccess(CognitoUserCodeDeliveryDetails verificationCodeDeliveryMedium) {
@@ -251,7 +250,11 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 promise.reject(exception);
             }
         };
-        user.resendConfirmationCodeInBackground(handler);
+        if(lastSignUp != null){
+            lastSignUp.resendConfirmationCodeInBackground(handler);
+        }else{
+            promise.reject(new Exception("There is no pending sign-up to confirm"));
+        }
     }
 
     private CognitoUser getOrCreateUser(ReadableMap authenticationData){
