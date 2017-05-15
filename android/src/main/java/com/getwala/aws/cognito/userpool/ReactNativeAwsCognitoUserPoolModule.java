@@ -42,6 +42,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     private final ReactApplicationContext reactContext;
     private CognitoUserPool cognitoUserPool;
     private CognitoUser lastSignUp;
+    private CognitoUser lastUser;
 
     public ReactNativeAwsCognitoUserPoolModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -100,7 +101,11 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         if(lastSignUp != null){
             lastSignUp.confirmSignUp(confirmationCode, true, handler);
         }else{
-            promise.reject(new Exception("There is no pending sign-up to confirm"));
+            if(lastUser != null){
+                lastUser.confirmSignUp(confirmationCode, true, handler);
+            }else{
+                promise.reject(new Exception("There is no pending sign-up to confirm"));
+            }
         }
     }
 
@@ -113,10 +118,10 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
     @ReactMethod
     public void authenticate(ReadableMap authenticationData, final Promise promise){
-        CognitoUser user = getOrCreateUser(authenticationData);
+        lastUser = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler();
         AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
-        new Thread(user.initiateUserAuthentication(authDetails, handler, true)).start();
+        new Thread(lastUser.initiateUserAuthentication(authDetails, handler, true)).start();
         promise.resolve(true);
     }
 
