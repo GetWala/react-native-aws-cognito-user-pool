@@ -17,7 +17,6 @@ public class ReactNativeAwsCognitoUserPoolPackage implements ReactPackage {
       return Arrays.<NativeModule>asList(new ReactNativeAwsCognitoUserPoolModule(reactContext));
     }
 
-    @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
       return Collections.emptyList();
     }
