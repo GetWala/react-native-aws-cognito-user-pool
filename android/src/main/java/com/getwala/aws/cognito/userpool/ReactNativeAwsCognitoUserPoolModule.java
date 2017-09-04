@@ -196,7 +196,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     @ReactMethod
     public void forgotPassword(ReadableMap authenticationData, final Promise promise){
         final ReactNativeAwsCognitoUserPoolModule module = this;
-        CognitoUser user = getOrCreateUser(authenticationData);
+        CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
         ForgotPasswordHandler handler = new ForgotPasswordHandler() {
             @Override
             public void onSuccess() {
