@@ -34,6 +34,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -219,7 +220,11 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
             @Override
             public void onFailure(Exception exception) {
-                module.errorHandler.invoke(exception);
+                WritableMap map = Arguments.createMap();
+                map.putString("stacktrace", Arrays.toString(exception.getStackTrace()));
+                map.putString("message", exception.getMessage());
+                        
+                module.errorHandler.invoke(map);
             }
         };
         lastForgotPasswordContinuation = null;
