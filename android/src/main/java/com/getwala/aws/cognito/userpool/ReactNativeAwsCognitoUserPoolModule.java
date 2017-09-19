@@ -219,12 +219,8 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
             }
 
             @Override
-            public void onFailure(Exception exception) {
-                WritableMap map = Arguments.createMap();
-                map.putString("stacktrace", Arrays.toString(exception.getStackTrace()));
-                map.putString("message", exception.getMessage());
-                        
-                module.errorHandler.invoke(map);
+            public void onFailure(Exception exception) {                      
+                module.errorHandler.invoke(exception.getMessage());
             }
         };
         lastForgotPasswordContinuation = null;
