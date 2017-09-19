@@ -256,15 +256,20 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 promise.reject(exception);
             }
         };
-        if(lastSignUp != null){
-            lastSignUp.resendConfirmationCodeInBackground(handler);
-        }else{
-            if(lastUser != null){
-                lastUser.resendConfirmationCodeInBackground(handler);
-            }else {
-                promise.reject(new Exception("There is no pending sign-up to confirm"));
-            }
-        }
+
+        CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
+        user.resendConfirmationCode(handler);
+
+
+//        if(lastSignUp != null){
+//            lastSignUp.resendConfirmationCodeInBackground(handler);
+//        }else{
+//            if(lastUser != null){
+//                lastUser.resendConfirmationCodeInBackground(handler);
+//            }else {
+//                promise.reject(new Exception("There is no pending sign-up to confirm"));
+//            }
+//        }
     }
 
     private CognitoUser getOrCreateUser(ReadableMap authenticationData){
