@@ -100,10 +100,10 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
             }
         };
         if(lastSignUp != null){
-            lastSignUp.confirmSignUp(confirmationCode, true, handler);
+            lastSignUp.confirmSignUp(confirmationCode, false, handler);
         }else{
             if(lastUser != null){
-                lastUser.confirmSignUp(confirmationCode, true, handler);
+                lastUser.confirmSignUp(confirmationCode, false, handler);
             }else{
                 promise.reject(new Exception("There is no pending sign-up to confirm"));
             }
