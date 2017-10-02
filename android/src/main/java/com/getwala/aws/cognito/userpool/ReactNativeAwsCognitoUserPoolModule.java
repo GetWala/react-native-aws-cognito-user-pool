@@ -99,15 +99,19 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
                 promise.reject(exception);
             }
         };
-        if(lastSignUp != null){
-            lastSignUp.confirmSignUp(confirmationCode, false, handler);
-        }else{
-            if(lastUser != null){
-                lastUser.confirmSignUp(confirmationCode, false, handler);
-            }else{
-                promise.reject(new Exception("There is no pending sign-up to confirm"));
-            }
-        }
+
+        CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
+        user.confirmSignUp(confirmationCode, false, handler);
+
+        // if(lastSignUp != null){
+        //     lastSignUp.confirmSignUp(confirmationCode, false, handler);
+        // }else{
+        //     if(lastUser != null){
+        //         lastUser.confirmSignUp(confirmationCode, false, handler);
+        //     }else{
+        //         promise.reject(new Exception("There is no pending sign-up to confirm"));
+        //     }
+        // }
     }
 
     @ReactMethod
@@ -257,25 +261,25 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
             }
         };
 
-        
+        CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
+        user.resendConfirmationCode(handler);
 
 
-       if(lastSignUp != null){
-           lastSignUp.resendConfirmationCodeInBackground(handler);
-       }else{
-           CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
-           user.resendConfirmationCode(handler);
-        //    if(lastUser != null){
-        //        lastUser.resendConfirmationCodeInBackground(handler);
-        //    }else {
-        //        promise.reject(new Exception("There is no pending sign-up to confirm"));
-        //    }
-       }
+//        if(lastSignUp != null){
+//            lastSignUp.resendConfirmationCodeInBackground(handler);
+//        }else{
+//            if(lastUser != null){
+//                lastUser.resendConfirmationCodeInBackground(handler);
+//            }else {
+//                promise.reject(new Exception("There is no pending sign-up to confirm"));
+//            }
+//        }
     }
 
     private CognitoUser getOrCreateUser(ReadableMap authenticationData){
-        CognitoUser user = cognitoUserPool.getCurrentUser();
-        if(user == null) user = cognitoUserPool.getUser(authenticationData.getString("userId"));
+        CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
+        // CognitoUser user = cognitoUserPool.getCurrentUser();
+        // if(user == null) user = cognitoUserPool.getUser(authenticationData.getString("userId"));
         return user;
     }
 
