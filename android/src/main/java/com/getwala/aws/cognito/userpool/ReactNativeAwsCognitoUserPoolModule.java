@@ -257,19 +257,20 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
             }
         };
 
-        CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
-        user.resendConfirmationCode(handler);
+        
 
 
-//        if(lastSignUp != null){
-//            lastSignUp.resendConfirmationCodeInBackground(handler);
-//        }else{
-//            if(lastUser != null){
-//                lastUser.resendConfirmationCodeInBackground(handler);
-//            }else {
-//                promise.reject(new Exception("There is no pending sign-up to confirm"));
-//            }
-//        }
+       if(lastSignUp != null){
+           lastSignUp.resendConfirmationCodeInBackground(handler);
+       }else{
+           CognitoUser user = cognitoUserPool.getUser(authenticationData.getString("userId"));
+           user.resendConfirmationCode(handler);
+        //    if(lastUser != null){
+        //        lastUser.resendConfirmationCodeInBackground(handler);
+        //    }else {
+        //        promise.reject(new Exception("There is no pending sign-up to confirm"));
+        //    }
+       }
     }
 
     private CognitoUser getOrCreateUser(ReadableMap authenticationData){
