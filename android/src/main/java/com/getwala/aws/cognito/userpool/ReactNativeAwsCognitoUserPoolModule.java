@@ -87,7 +87,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
     }
 
     @ReactMethod
-    public void confirmSignUp(String userId, String confirmationCode, final Promise promise){
+    public void confirmSignUp(String userId, String confirmationCode,  boolean forcedAliasCreation ,final Promise promise){
         GenericHandler handler = new GenericHandler() {
             @Override
             public void onSuccess() {
@@ -101,7 +101,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         };
 
         CognitoUser user = cognitoUserPool.getUser(userId);
-        user.confirmSignUp(confirmationCode, false, handler);
+        user.confirmSignUp(confirmationCode, forcedAliasCreation, handler);
 
         // if(lastSignUp != null){
         //     lastSignUp.confirmSignUp(confirmationCode, false, handler);
