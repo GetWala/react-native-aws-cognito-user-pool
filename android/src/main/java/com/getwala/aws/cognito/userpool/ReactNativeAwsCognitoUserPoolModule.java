@@ -34,9 +34,12 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaModule {
 
@@ -121,11 +124,31 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
         user.getSessionInBackground(handler);
     }
 
+
+    private Map<String, String> toStringMap(ReadableMap values, List<String> without){
+        HashMap<String, String> result = new HashMap<>();
+        ReadableMapKeySetIterator iterator = values.keySetIterator();
+        while(iterator.hasNextKey()){
+            String key = iterator.nextKey();
+            if (!without.contains(key)) {
+                result.put(key, values.getString(key));
+            }
+        }
+        return result;
+    }
+
     @ReactMethod
     public void authenticate(ReadableMap authenticationData, final Promise promise){
         lastUser = getOrCreateUser(authenticationData);
         AuthenticationHandler handler = createAuthenticationHandler();
-        AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), null);
+
+        List<String> without = new ArrayList<>();
+        without.add("userId");
+        without.add("password");
+
+        Map<String, String> validationData = toStringMap(authenticationData, without);
+
+        AuthenticationDetails authDetails = new AuthenticationDetails(authenticationData.getString("userId"), authenticationData.getString("password"), validationData);
         new Thread(lastUser.initiateUserAuthentication(authDetails, handler, true)).start();
         promise.resolve(true);
     }
