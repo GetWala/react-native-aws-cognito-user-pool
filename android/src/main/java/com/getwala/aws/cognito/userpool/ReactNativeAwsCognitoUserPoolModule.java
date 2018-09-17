@@ -247,7 +247,7 @@ public class ReactNativeAwsCognitoUserPoolModule extends ReactContextBaseJavaMod
 
             @Override
             public void onFailure(Exception exception) {                      
-                module.errorHandler.invoke(exception.getMessage());
+                promise.reject(exception);
             }
         };
         lastForgotPasswordContinuation = null;
